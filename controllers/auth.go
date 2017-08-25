@@ -1,7 +1,11 @@
 package controllers
 
 import (
+	"../config"
+	"../database"
+	"../interfaces"
 	Users "../models/users"
+	"../utils"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -18,12 +22,15 @@ func LoginController(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var user Users.UserInfo
+		var user interfaces.UserInfo
 		json.Unmarshal(body, &user)
 
 		realUser := Users.CheckCredential(&user)
 
 		if realUser != nil {
+			token := utils.GenerateToken(realUser)
+
+			w.Header().Set("Authorization", token)
 			w.WriteHeader(http.StatusOK)
 			fmt.Fprintf(w, "Login successfully!")
 			return
@@ -44,7 +51,7 @@ func SignUpController(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var user Users.UserInfo
+		var user interfaces.UserInfo
 		json.Unmarshal(body, &user)
 
 		status, err := Users.AddOne(&user)
@@ -54,4 +61,16 @@ func SignUpController(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Fprintf(w, status)
 	}
+}
+
+func SignOutController(res http.ResponseWriter, req *http.Request) {
+	var rawToken string
+	if len(req.Header["Authorization"]) > 0 {
+		rawToken = req.Header["Authorization"][0]
+	}
+
+	database.RedisConn.SAdd(config.INVALID_TOKENS, rawToken)
+
+	fmt.Println(database.RedisConn.SMembers(config.INVALID_TOKENS))
+
 }

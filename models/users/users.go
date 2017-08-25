@@ -2,18 +2,12 @@ package users
 
 import (
 	"../../database"
+	"../../interfaces"
 	"database/sql"
 	"errors"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 )
-
-type UserInfo struct {
-	Id       int
-	UserName string `json:"userName"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
-}
 
 func readAll() {
 	db := database.DBCon
@@ -40,7 +34,7 @@ func readAll() {
 	}
 }
 
-func AddOne(userInfo *UserInfo) (string, error) {
+func AddOne(userInfo *(interfaces.UserInfo)) (string, error) {
 	db := database.DBCon
 
 	var username string
@@ -63,7 +57,7 @@ func AddOne(userInfo *UserInfo) (string, error) {
 	return "Create failed", errors.New("this username/email has been used")
 }
 
-func CheckCredential(userInfo *UserInfo) *UserInfo {
+func CheckCredential(userInfo *(interfaces.UserInfo)) *(interfaces.UserInfo) {
 	db := database.DBCon
 	rawPassword := userInfo.Password
 	var hashPassword string
@@ -78,6 +72,6 @@ func CheckCredential(userInfo *UserInfo) *UserInfo {
 		return nil
 	}
 
-	return &UserInfo{id, userName, "", email}
+	return &interfaces.UserInfo{id, userName, "", email}
 
 }

@@ -9,6 +9,7 @@ import (
 
 func main() {
 	database.Initialize()
+	database.InitializeRedis()
 	defer database.Close()
 
 	routes.InititalizeRoutes()

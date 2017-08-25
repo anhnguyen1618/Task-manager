@@ -4,13 +4,11 @@ import (
 	"net/http"
 )
 
-type Adapter func(http.Handler) http.Handler
+type Adapter func(http.HandlerFunc) http.HandlerFunc
 
-func ApplyMiddleware(rawHandler http.HandlerFunc, middleWares ...Adapter) http.Handler {
+func ApplyMiddleware(rawHandler http.HandlerFunc, middleWares ...Adapter) http.HandlerFunc {
 	// Convert rawHandler from type http.HandlerFunc to type http.Handler
-	convertedHandler := func(f http.HandlerFunc) http.Handler {
-		return http.HandlerFunc(f)
-	}(rawHandler)
+	convertedHandler := rawHandler
 
 	/*
 	* Iterate through list of middleware [a,b,c]
