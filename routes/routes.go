@@ -3,17 +3,24 @@ package routes
 import (
 	"../controllers"
 	"../middlewares"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
 func InititalizeRoutes() {
+	r := mux.NewRouter()
 	fs := http.FileServer(http.Dir("/public"))
 
 	// http.Handle("/", httpInterceptor(router))
-	http.Handle("/public", fs)
-	http.HandleFunc("/", middlewares.ApplyMiddleware(controllers.LandingController, middlewares.Logger, middlewares.Authenticate))
-	http.HandleFunc("/login", controllers.LoginController)
-	http.HandleFunc("/signUp", controllers.SignUpController)
-	http.HandleFunc("/signout", controllers.SignOutController)
+	r.Handle("/public", fs)
+	r.HandleFunc("/", middlewares.ApplyMiddleware(controllers.LandingController, middlewares.Logger, middlewares.Authenticate))
+	r.HandleFunc("/login", controllers.LoginController)
+	r.HandleFunc("/signUp", controllers.SignUpController)
+	r.HandleFunc("/signout", controllers.SignOutController)
+
+	r.HandleFunc("/tasks", controllers.AllTaskController)
+	r.HandleFunc("/tasks/{id}", controllers.UpdateTaskController)
+
+	http.Handle("/", r)
 
 }
