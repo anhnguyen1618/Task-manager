@@ -3,7 +3,10 @@ package tasks
 import (
 	"../../database"
 	"../../interfaces"
+	CommentModel "../comments"
 )
+
+// var db = database.DBCon
 
 func GetAll() []interfaces.TaskQuery {
 	db := database.DBCon
@@ -34,7 +37,9 @@ func GetAll() []interfaces.TaskQuery {
 			panic(err.Error())
 		}
 
-		task := interfaces.TaskQuery{id, title, status, start_time, end_time, description, assigneeName, assignorName}
+		comments := CommentModel.GetComment(id)
+
+		task := interfaces.TaskQuery{id, title, status, start_time, end_time, description, assigneeName, assignorName, comments}
 		tasks = append(tasks, task)
 	}
 
