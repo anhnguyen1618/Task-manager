@@ -3,9 +3,10 @@ package comments
 import (
 	"../../database"
 	"../../interfaces"
+	"time"
 )
 
-func GetComment(taskID int) []interfaces.Comment {
+func Get(taskID int) []interfaces.Comment {
 	db := database.DBCon
 
 	commentRows, err := db.Query(
@@ -38,16 +39,38 @@ func GetComment(taskID int) []interfaces.Comment {
 	return comments
 }
 
-func AddComment(newComment *interfaces.Comment, taskID int) (int64, error) {
+func Add(newComment *interfaces.Comment, taskID int) (int64, error) {
 	db := database.DBCon
 	result, err := db.Exec(
 		`INSERT INTO comments(ID, content, author, task_id, date)
 		 VALUES(?, ?, ?, ?, ?)`,
-		nil, newComment.Content, newComment.AuthorID, taskID, newComment.date)
+		nil, newComment.Content, newComment.AuthorID, taskID, time.Now().String())
 	if err != nil {
 		return 0, err
 	}
 
 	id, _ := result.LastInsertId()
 	return id, nil
+}
+
+func Update(updatedComment *interfaces.Comment) error {
+	db := database.DBCon
+	_, err := db.Exec(
+		`UPDATE comments
+		 SET content = ?
+		 WHERE id = ?`,
+		updatedComment.Content, updatedComment.Id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func Delete(id int) error {
+	db := database.DBCon
+	_, err := db.Exec(`DELETE FROM comments WHERE id = ?`, id)
+
+	return err
 }

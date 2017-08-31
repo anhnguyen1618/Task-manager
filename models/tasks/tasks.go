@@ -37,7 +37,7 @@ func GetAll() []interfaces.TaskQuery {
 			panic(err.Error())
 		}
 
-		comments := CommentModel.GetComment(id)
+		comments := CommentModel.Get(id)
 
 		task := interfaces.TaskQuery{id, title, status, start_time, end_time, description, assigneeName, assignorName, comments}
 		tasks = append(tasks, task)

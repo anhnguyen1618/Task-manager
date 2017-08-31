@@ -21,6 +21,9 @@ func InititalizeRoutes() {
 	r.HandleFunc("/tasks", controllers.AllTaskController)
 	r.HandleFunc("/tasks/{id}", controllers.UpdateTaskController)
 
+	r.HandleFunc("/tasks/{id}/comments", controllers.CommentController)
+	r.HandleFunc("/tasks/{id}/comments/{commentId}", controllers.UpdateCommentController)
+
 	http.Handle("/", r)
 
 }
