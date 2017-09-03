@@ -16,6 +16,6 @@ func Logger(next http.HandlerFunc) http.HandlerFunc {
 			fmt.Printf("[%s] %q %v\n", r.Method, r.URL.String(), duration)
 		}()
 
-		next(w, r)
+		next.ServeHTTP(w, r)
 	}
 }

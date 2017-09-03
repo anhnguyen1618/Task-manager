@@ -18,10 +18,9 @@ func readAll() {
 
 	for rows.Next() {
 		var id int
-		var username string
-		var password string
-		var email string
-		err = rows.Scan(&id, &username, &password, &email)
+		var username, password, email, role string
+
+		err = rows.Scan(&id, &username, &password, &email, &role)
 
 		if err != nil {
 			panic(err.Error())
@@ -44,7 +43,7 @@ func AddOne(userInfo *(interfaces.UserInfo)) (string, error) {
 		password := userInfo.Password
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
-		result, err := db.Exec("INSERT INTO users(username, email, password) VALUES(?, ?, ?)", userInfo.UserName, userInfo.Email, hashedPassword)
+		result, err := db.Exec("INSERT INTO users(username, email, password, role) VALUES(?, ?, ?, ?)", userInfo.UserName, userInfo.Email, hashedPassword, "USER")
 
 		fmt.Println(result.LastInsertId())
 
@@ -63,8 +62,9 @@ func CheckCredential(userInfo *(interfaces.UserInfo)) *(interfaces.UserInfo) {
 	var hashPassword string
 
 	var id int
-	var userName, email string
-	err := db.QueryRow("SELECT password, id, username, email FROM users WHERE username=?", userInfo.UserName).Scan(&hashPassword, &id, &userName, &email)
+	var userName, email, role string
+	err := db.QueryRow("SELECT password, id, username, email, role FROM users WHERE username=?", userInfo.UserName).
+		Scan(&hashPassword, &id, &userName, &email, &role)
 
 	err = bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(rawPassword))
 
@@ -72,6 +72,6 @@ func CheckCredential(userInfo *(interfaces.UserInfo)) *(interfaces.UserInfo) {
 		return nil
 	}
 
-	return &interfaces.UserInfo{id, userName, "", email}
+	return &interfaces.UserInfo{id, userName, "", email, role}
 
 }

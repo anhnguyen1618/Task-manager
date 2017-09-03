@@ -3,6 +3,7 @@ package controllers
 import (
 	"../interfaces"
 	Tasks "../models/tasks"
+	"../utils"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -17,9 +18,7 @@ func AllTaskController(w http.ResponseWriter, r *http.Request) {
 
 		tasks := Tasks.GetAll()
 		result, err := json.Marshal(tasks)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+		utils.CheckErrors(w, err, http.StatusInternalServerError)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(result)
 		return
@@ -27,10 +26,7 @@ func AllTaskController(w http.ResponseWriter, r *http.Request) {
 
 		body, err := ioutil.ReadAll(r.Body)
 
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		utils.CheckErrors(w, err, http.StatusInternalServerError)
 
 		var task interfaces.Task
 		json.Unmarshal(body, &task)
@@ -42,10 +38,8 @@ func AllTaskController(w http.ResponseWriter, r *http.Request) {
 
 		id, err := Tasks.Add(&task)
 
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		utils.CheckErrors(w, err, http.StatusInternalServerError)
+
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "task "+strconv.FormatInt(id, 10)+" created!")
 		return
@@ -56,18 +50,12 @@ func UpdateTaskController(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	utils.CheckErrors(w, err, http.StatusBadRequest)
 
 	if r.Method == "PUT" {
 		body, err := ioutil.ReadAll(r.Body)
 
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		utils.CheckErrors(w, err, http.StatusInternalServerError)
 
 		var task interfaces.Task
 		json.Unmarshal(body, &task)
@@ -83,10 +71,7 @@ func UpdateTaskController(w http.ResponseWriter, r *http.Request) {
 
 		err = Tasks.Update(&task)
 
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		utils.CheckErrors(w, err, http.StatusInternalServerError)
 
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "task "+vars["id"]+" updated!")
@@ -94,11 +79,23 @@ func UpdateTaskController(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == "DELETE" {
-		err := Tasks.Delete(id)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+		user := utils.ExtractContext(r)
+		task := Tasks.GetOne(id)
+
+		if &task == nil {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprintf(w, "task "+vars["id"]+" not found!")
 			return
 		}
+
+		if user.Role != "ADMIN" && user.UserName != task.AssignorName {
+			w.WriteHeader(http.StatusForbidden)
+			fmt.Fprintf(w, "You do not have permission for this action!")
+			return
+		}
+
+		err := Tasks.Delete(id)
+		utils.CheckErrors(w, err, http.StatusInternalServerError)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "task "+vars["id"]+" removed!")
 		return

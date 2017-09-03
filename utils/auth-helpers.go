@@ -11,9 +11,9 @@ import (
 )
 
 func ExtractContext(r *http.Request) *interfaces.Claims {
-	claims, ok := r.Context().Value(config.USER_DATA_CONTEXT_ADDRESS).(interfaces.Claims)
+	claims, ok := r.Context().Value(config.USER_DATA_CONTEXT_ADDRESS).(*interfaces.Claims)
 	if ok {
-		return &claims
+		return claims
 	}
 	return nil
 }
@@ -39,6 +39,7 @@ func GenerateToken(user *interfaces.UserInfo) string {
 		user.Id,
 		user.UserName,
 		user.Email,
+		user.Role,
 		jwt.StandardClaims{
 			ExpiresAt: expireToken,
 			Issuer:    "localhost:8080",

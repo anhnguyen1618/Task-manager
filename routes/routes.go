@@ -11,19 +11,21 @@ func InititalizeRoutes() {
 	r := mux.NewRouter()
 	fs := http.FileServer(http.Dir("/public"))
 
-	// http.Handle("/", httpInterceptor(router))
+	// Declare shortHand middlewares
+	authMW := middlewares.Authenticate
+
 	r.Handle("/public", fs)
-	r.HandleFunc("/", middlewares.ApplyMiddleware(controllers.LandingController, middlewares.Logger, middlewares.Authenticate))
+	r.HandleFunc("/", authMW(controllers.LandingController))
 	r.HandleFunc("/login", controllers.LoginController)
 	r.HandleFunc("/signUp", controllers.SignUpController)
-	r.HandleFunc("/signout", controllers.SignOutController)
+	r.HandleFunc("/signout", authMW(controllers.SignOutController))
 
-	r.HandleFunc("/tasks", controllers.AllTaskController)
-	r.HandleFunc("/tasks/{id}", controllers.UpdateTaskController)
+	r.HandleFunc("/tasks", authMW(controllers.AllTaskController))
+	r.HandleFunc("/tasks/{id}", authMW(controllers.UpdateTaskController))
 
-	r.HandleFunc("/tasks/{id}/comments", controllers.CommentController)
-	r.HandleFunc("/tasks/{id}/comments/{commentId}", controllers.UpdateCommentController)
+	r.HandleFunc("/tasks/{id}/comments", authMW(controllers.CommentController))
+	r.HandleFunc("/tasks/{id}/comments/{commentId}", authMW(controllers.UpdateCommentController))
 
-	http.Handle("/", r)
+	http.HandleFunc("/", middlewares.Logger(middlewares.MuxErrorHandler(r)))
 
 }

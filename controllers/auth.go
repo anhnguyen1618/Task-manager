@@ -17,10 +17,7 @@ func LoginController(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		body, err := ioutil.ReadAll(r.Body)
 
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		utils.CheckErrors(w, err, http.StatusInternalServerError)
 
 		var user interfaces.UserInfo
 		json.Unmarshal(body, &user)
@@ -46,10 +43,7 @@ func SignUpController(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		body, err := ioutil.ReadAll(r.Body)
 
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		utils.CheckErrors(w, err, http.StatusInternalServerError)
 
 		var user interfaces.UserInfo
 		json.Unmarshal(body, &user)
