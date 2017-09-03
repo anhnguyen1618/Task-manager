@@ -43,21 +43,43 @@ func UpdateCommentController(w http.ResponseWriter, r *http.Request) {
 
 	utils.CheckErrors(w, err, http.StatusBadRequest)
 
+	user := utils.ExtractContext(r)
+	currentComment := Comments.GetById(commentId)
+
+	if currentComment == nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "Comment "+vars["commentId"]+" not found!")
+		return
+	}
+
+	if user.Role != "ADMIN" && user.UserName != currentComment.AuthorName {
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintf(w, "You do not have permission for this action!")
+		return
+	}
+
 	if r.Method == "PUT" {
+
+		if user.UserName != currentComment.AuthorName {
+			w.WriteHeader(http.StatusForbidden)
+			fmt.Fprintf(w, "You do not have permission for this action!")
+			return
+		}
+
 		body, err := ioutil.ReadAll(r.Body)
 
 		utils.CheckErrors(w, err, http.StatusBadRequest)
 
-		var comment interfaces.Comment
-		json.Unmarshal(body, &comment)
-		comment.Id = commentId
+		var updatedComment interfaces.Comment
+		json.Unmarshal(body, &updatedComment)
+		updatedComment.Id = commentId
 
-		if &comment == nil {
+		if &updatedComment == nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		err = Comments.Update(&comment)
+		err = Comments.Update(&updatedComment)
 
 		utils.CheckErrors(w, err, http.StatusInternalServerError)
 
@@ -67,6 +89,7 @@ func UpdateCommentController(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == "DELETE" {
+		return
 		err := Comments.Delete(commentId)
 		utils.CheckErrors(w, err, http.StatusInternalServerError)
 		w.WriteHeader(http.StatusOK)

@@ -82,7 +82,7 @@ func UpdateTaskController(w http.ResponseWriter, r *http.Request) {
 		user := utils.ExtractContext(r)
 		task := Tasks.GetOne(id)
 
-		if &task == nil {
+		if task == nil {
 			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprintf(w, "task "+vars["id"]+" not found!")
 			return

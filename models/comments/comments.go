@@ -39,6 +39,31 @@ func Get(taskID int) []interfaces.Comment {
 	return comments
 }
 
+func GetById(commentID int) *interfaces.Comment {
+	db := database.DBCon
+
+	commentRows := db.QueryRow(
+		`SELECT comments.ID, content, username AS authorName, author AS authorId , date FROM comments
+		 JOIN users ON comments.author = users.id
+		 WHERE comments.ID=?`, commentID)
+
+	var conmentId int
+	var content string
+	var authorName string
+	var authorID int
+	var date string
+	err := commentRows.Scan(&conmentId, &content, &authorName, &authorID, &date)
+
+	if err != nil {
+		return nil
+		// panic(err.Error())
+	}
+
+	comment := &interfaces.Comment{conmentId, content, authorName, authorID, date}
+
+	return comment
+}
+
 func Add(newComment *interfaces.Comment, taskID int) (int64, error) {
 	db := database.DBCon
 	result, err := db.Exec(

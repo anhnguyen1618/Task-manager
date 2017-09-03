@@ -46,7 +46,7 @@ func GetAll() []interfaces.TaskQuery {
 	return tasks
 }
 
-func GetOne(id int) interfaces.TaskQuery {
+func GetOne(id int) *interfaces.TaskQuery {
 	db := database.DBCon
 	row := db.QueryRow(
 		`SELECT A.ID, title, status, start_time, end_time, description, assigneeName, users.username AS assignorName
@@ -65,10 +65,10 @@ func GetOne(id int) interfaces.TaskQuery {
 	var assignorName string
 	err := row.Scan(&id, &title, &status, &start_time, &end_time, &description, &assigneeName, &assignorName)
 	if err != nil {
-		panic(err.Error())
+		return nil
 	}
 	comments := CommentModel.Get(id)
-	task := interfaces.TaskQuery{id, title, status, start_time, end_time, description, assigneeName, assignorName, comments}
+	task := &interfaces.TaskQuery{id, title, status, start_time, end_time, description, assigneeName, assignorName, comments}
 	return task
 }
 
