@@ -4,6 +4,7 @@ import (
 	"../config"
 	"../utils"
 	"context"
+	"fmt"
 	"net/http"
 )
 
@@ -12,14 +13,16 @@ func Authenticate(next http.HandlerFunc) http.HandlerFunc {
 		rawToken := utils.ExtractToken(req)
 
 		if rawToken != "" && !utils.CheckValidToken(rawToken) {
-			http.NotFound(res, req)
+			res.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprintf(res, "Unauthorized access!")
 			return
 		}
 
 		claims := utils.ExtractUserData(rawToken)
 
 		if claims == nil {
-			http.NotFound(res, req)
+			res.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprintf(res, "Unauthorized access!")
 			return
 		}
 

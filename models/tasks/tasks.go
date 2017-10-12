@@ -4,6 +4,7 @@ import (
 	"../../database"
 	"../../interfaces"
 	CommentModel "../comments"
+	"time"
 )
 
 // var db = database.DBCon
@@ -11,11 +12,8 @@ import (
 func GetAll() []interfaces.TaskQuery {
 	db := database.DBCon
 	rows, err := db.Query(
-		`SELECT A.ID, title, status, start_time, end_time, description, assigneeName, users.username AS assignorName
-		 FROM
-		 (SELECT tasks.ID, title, status, start_time, end_time, assignor, description, username AS assigneeName 
-		 	FROM tasks INNER JOIN users ON tasks.assignee = users.id)
-		 AS A INNER JOIN users ON A.assignor = users.id`)
+		`SELECT ID, title, status, assignee, assignor, start_time, end_time,description
+		 	FROM tasks`)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -26,12 +24,12 @@ func GetAll() []interfaces.TaskQuery {
 		var id int
 		var title string
 		var status string
+		var assignee string
+		var assignor string
 		var start_time string
 		var end_time string
 		var description string
-		var assigneeName string
-		var assignorName string
-		err = rows.Scan(&id, &title, &status, &start_time, &end_time, &description, &assigneeName, &assignorName)
+		err = rows.Scan(&id, &title, &status, &assignee, &assignor, &start_time, &end_time, &description)
 
 		if err != nil {
 			panic(err.Error())
@@ -39,7 +37,7 @@ func GetAll() []interfaces.TaskQuery {
 
 		comments := CommentModel.Get(id)
 
-		task := interfaces.TaskQuery{id, title, status, start_time, end_time, description, assigneeName, assignorName, comments}
+		task := interfaces.TaskQuery{id, title, status, assignee, assignor, start_time, end_time, description, comments}
 		tasks = append(tasks, task)
 	}
 
@@ -49,26 +47,23 @@ func GetAll() []interfaces.TaskQuery {
 func GetOne(id int) *interfaces.TaskQuery {
 	db := database.DBCon
 	row := db.QueryRow(
-		`SELECT A.ID, title, status, start_time, end_time, description, assigneeName, users.username AS assignorName
-		 FROM
-		 (SELECT tasks.ID, title, status, start_time, end_time, assignor, description, username AS assigneeName 
-		 	FROM tasks INNER JOIN users ON tasks.assignee = users.id)
-		 AS A INNER JOIN users ON A.assignor = users.id
-		 WHERE A.ID=?`, id)
+		`SELECT title, status, assignee, assignor, start_time, end_time,description
+		 	FROM tasks
+		 	WHERE ID = ?`, id)
 
 	var title string
 	var status string
+	var assignee string
+	var assignor string
 	var start_time string
 	var end_time string
 	var description string
-	var assigneeName string
-	var assignorName string
-	err := row.Scan(&id, &title, &status, &start_time, &end_time, &description, &assigneeName, &assignorName)
+	err := row.Scan(&title, &status, &assignee, &assignor, &start_time, &end_time, &description)
 	if err != nil {
 		return nil
 	}
 	comments := CommentModel.Get(id)
-	task := &interfaces.TaskQuery{id, title, status, start_time, end_time, description, assigneeName, assignorName, comments}
+	task := &interfaces.TaskQuery{id, title, status, assignee, assignor, start_time, end_time, description, comments}
 	return task
 }
 
@@ -78,7 +73,7 @@ func Add(task *interfaces.Task) (int64, error) {
 	result, err := db.Exec(
 		`INSERT INTO tasks(id, title, status, assignee, assignor, start_time, end_time, description)
 		 VALUES(?, ?, ?, ?, ?, ?, ?, ?)`,
-		nil, task.Title, task.Status, task.Assignee, task.Assignor, task.StartTime, task.EndTime, task.Description)
+		nil, task.Title, task.Status, task.Assignee, task.Assignor, time.Now().String(), task.EndTime, task.Description)
 
 	if err != nil {
 		return 0, err

@@ -52,7 +52,7 @@ func UpdateCommentController(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.Role != "ADMIN" && user.UserName != currentComment.AuthorName {
+	if user.Role != "ADMIN" && user.UserName != currentComment.Author {
 		w.WriteHeader(http.StatusForbidden)
 		fmt.Fprintf(w, "You do not have permission for this action!")
 		return
@@ -60,7 +60,7 @@ func UpdateCommentController(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "PUT" {
 
-		if user.UserName != currentComment.AuthorName {
+		if user.UserName != currentComment.Author {
 			w.WriteHeader(http.StatusForbidden)
 			fmt.Fprintf(w, "You do not have permission for this action!")
 			return
@@ -89,7 +89,6 @@ func UpdateCommentController(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == "DELETE" {
-		return
 		err := Comments.Delete(commentId)
 		utils.CheckErrors(w, err, http.StatusInternalServerError)
 		w.WriteHeader(http.StatusOK)

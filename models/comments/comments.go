@@ -10,8 +10,8 @@ func Get(taskID int) []interfaces.Comment {
 	db := database.DBCon
 
 	commentRows, err := db.Query(
-		`SELECT users.ID, content, username AS authorName, author AS authorId , date FROM comments
-		 JOIN users ON comments.author = users.id
+		`SELECT ID, content, author, date
+		 FROM comments
 		 WHERE task_id=?`, taskID)
 
 	if err != nil {
@@ -23,16 +23,15 @@ func Get(taskID int) []interfaces.Comment {
 	for commentRows.Next() {
 		var conmentId int
 		var content string
-		var authorName string
-		var authorID int
+		var author string
 		var date string
-		err = commentRows.Scan(&conmentId, &content, &authorName, &authorID, &date)
+		err = commentRows.Scan(&conmentId, &content, &author, &date)
 
 		if err != nil {
 			panic(err.Error())
 		}
 
-		comment := interfaces.Comment{conmentId, content, authorName, authorID, date}
+		comment := interfaces.Comment{conmentId, content, author, date}
 		comments = append(comments, comment)
 	}
 
@@ -43,23 +42,22 @@ func GetById(commentID int) *interfaces.Comment {
 	db := database.DBCon
 
 	commentRows := db.QueryRow(
-		`SELECT comments.ID, content, username AS authorName, author AS authorId , date FROM comments
-		 JOIN users ON comments.author = users.id
-		 WHERE comments.ID=?`, commentID)
+		`SELECT ID, content, author, date
+		 FROM comments
+		 WHERE ID=?`, commentID)
 
 	var conmentId int
 	var content string
-	var authorName string
-	var authorID int
+	var author string
 	var date string
-	err := commentRows.Scan(&conmentId, &content, &authorName, &authorID, &date)
+	err := commentRows.Scan(&conmentId, &content, &author, &date)
 
 	if err != nil {
 		return nil
 		// panic(err.Error())
 	}
 
-	comment := &interfaces.Comment{conmentId, content, authorName, authorID, date}
+	comment := &interfaces.Comment{conmentId, content, author, date}
 
 	return comment
 }
@@ -69,7 +67,7 @@ func Add(newComment *interfaces.Comment, taskID int) (int64, error) {
 	result, err := db.Exec(
 		`INSERT INTO comments(ID, content, author, task_id, date)
 		 VALUES(?, ?, ?, ?, ?)`,
-		nil, newComment.Content, newComment.AuthorID, taskID, time.Now().String())
+		nil, newComment.Content, newComment.Author, taskID, time.Now().String())
 	if err != nil {
 		return 0, err
 	}

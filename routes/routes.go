@@ -13,6 +13,8 @@ func InititalizeRoutes() {
 
 	// Declare shortHand middlewares
 	authMW := middlewares.Authenticate
+	loggerMW := middlewares.Logger
+	errorMW := middlewares.MuxErrorHandler
 
 	r.Handle("/public", fs)
 	r.HandleFunc("/", authMW(controllers.LandingController))
@@ -26,6 +28,6 @@ func InititalizeRoutes() {
 	r.HandleFunc("/tasks/{id}/comments", authMW(controllers.CommentController))
 	r.HandleFunc("/tasks/{id}/comments/{commentId}", authMW(controllers.UpdateCommentController))
 
-	http.HandleFunc("/", middlewares.Logger(middlewares.MuxErrorHandler(r)))
+	http.HandleFunc("/", loggerMW(errorMW(r)))
 
 }

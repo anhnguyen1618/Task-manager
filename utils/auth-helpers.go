@@ -36,7 +36,6 @@ func CheckValidToken(token string) bool {
 func GenerateToken(user *interfaces.UserInfo) string {
 	expireToken := time.Now().Add(time.Hour * 1).Unix()
 	claims := interfaces.Claims{
-		user.Id,
 		user.UserName,
 		user.Email,
 		user.Role,

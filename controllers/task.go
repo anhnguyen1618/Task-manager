@@ -60,8 +60,6 @@ func UpdateTaskController(w http.ResponseWriter, r *http.Request) {
 		var task interfaces.Task
 		json.Unmarshal(body, &task)
 
-		fmt.Println(task)
-
 		if &task == nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -88,7 +86,7 @@ func UpdateTaskController(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if user.Role != "ADMIN" && user.UserName != task.AssignorName {
+		if user.Role != "ADMIN" && user.UserName != task.Assignor {
 			w.WriteHeader(http.StatusForbidden)
 			fmt.Fprintf(w, "You do not have permission for this action!")
 			return

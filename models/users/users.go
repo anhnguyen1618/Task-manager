@@ -3,9 +3,6 @@ package users
 import (
 	"../../database"
 	"../../interfaces"
-	"database/sql"
-	"errors"
-	"fmt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -17,43 +14,31 @@ func readAll() {
 	}
 
 	for rows.Next() {
-		var id int
 		var username, password, email, role string
 
-		err = rows.Scan(&id, &username, &password, &email, &role)
+		err = rows.Scan(&username, &password, &email, &role)
 
 		if err != nil {
 			panic(err.Error())
 		}
-
-		fmt.Println(id)
-		fmt.Println(username)
-		fmt.Println(password)
-		fmt.Println(email)
 	}
 }
 
 func AddOne(userInfo *(interfaces.UserInfo)) (string, error) {
 	db := database.DBCon
 
-	var username string
-	err := db.QueryRow("SELECT username FROM users WHERE username=? OR email=?", userInfo.UserName, userInfo.Email).Scan(&username)
-
-	if err == sql.ErrNoRows {
-		password := userInfo.Password
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-
-		result, err := db.Exec("INSERT INTO users(username, email, password, role) VALUES(?, ?, ?, ?)", userInfo.UserName, userInfo.Email, hashedPassword, "USER")
-
-		fmt.Println(result.LastInsertId())
-
-		if err != nil {
-			return "Create failed", err
-		}
-		return "Create successfully", nil
+	password := userInfo.Password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "Create failed", err
 	}
 
-	return "Create failed", errors.New("this username/email has been used")
+	_, err = db.Exec("INSERT INTO users(username, email, password, role) VALUES(?, ?, ?, ?)", userInfo.UserName, userInfo.Email, hashedPassword, "USER")
+
+	if err != nil {
+		return "Create failed", err
+	}
+	return "Create successfully", nil
 }
 
 func CheckCredential(userInfo *(interfaces.UserInfo)) *(interfaces.UserInfo) {
@@ -61,10 +46,9 @@ func CheckCredential(userInfo *(interfaces.UserInfo)) *(interfaces.UserInfo) {
 	rawPassword := userInfo.Password
 	var hashPassword string
 
-	var id int
 	var userName, email, role string
-	err := db.QueryRow("SELECT password, id, username, email, role FROM users WHERE username=?", userInfo.UserName).
-		Scan(&hashPassword, &id, &userName, &email, &role)
+	err := db.QueryRow("SELECT password, username, email, role FROM users WHERE username=?", userInfo.UserName).
+		Scan(&hashPassword, &userName, &email, &role)
 
 	err = bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(rawPassword))
 
@@ -72,6 +56,6 @@ func CheckCredential(userInfo *(interfaces.UserInfo)) *(interfaces.UserInfo) {
 		return nil
 	}
 
-	return &interfaces.UserInfo{id, userName, "", email, role}
+	return &interfaces.UserInfo{userName, "", email, role}
 
 }
