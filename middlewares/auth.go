@@ -1,15 +1,17 @@
 package middlewares
 
 import (
-	"../config"
-	"../utils"
 	"context"
 	"fmt"
 	"net/http"
+
+	"../config"
+	"../utils"
 )
 
 func Authenticate(next http.HandlerFunc) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
+
 		rawToken := utils.ExtractToken(req)
 
 		if rawToken != "" && !utils.CheckValidToken(rawToken) {

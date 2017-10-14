@@ -1,18 +1,21 @@
 package main
 
 import (
-	"./database"
-	"./routes"
 	"fmt"
 	"net/http"
+
+	"./database"
+	"./interfaces"
+	"./routes"
 )
 
 func main() {
-	database.Initialize()
-	database.InitializeRedis()
-	defer database.Close()
+	db := database.Initialize()
+	redisDB := database.InitializeRedis()
 
-	routes.InititalizeRoutes()
+	env := &interfaces.Env{db, redisDB}
+
+	routes.InititalizeRoutes(env)
 	http.ListenAndServe(":8080", nil)
 	fmt.Println("Server is listening port: ", 8080)
 }

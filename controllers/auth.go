@@ -1,70 +1,79 @@
 package controllers
 
 import (
-	"../config"
-	"../database"
-	"../interfaces"
-	Users "../models/users"
-	"../utils"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"../config"
+	"../interfaces"
+	"../models"
+	"../utils"
 )
 
-func LoginController(w http.ResponseWriter, r *http.Request) {
+func LoginController(env *interfaces.Env) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 
-	if r.Method == "POST" {
-		body, err := ioutil.ReadAll(r.Body)
+		if r.Method == "POST" {
+			body, err := ioutil.ReadAll(r.Body)
 
-		utils.CheckErrors(w, err, http.StatusInternalServerError)
+			utils.CheckErrors(w, err, http.StatusInternalServerError)
 
-		var user interfaces.UserInfo
-		json.Unmarshal(body, &user)
+			var user interfaces.UserInfo
+			json.Unmarshal(body, &user)
 
-		realUser := Users.CheckCredential(&user)
+			Users := models.Users{env.DB}
 
-		if realUser != nil {
-			token := utils.GenerateToken(realUser)
+			realUser := Users.CheckCredential(&user)
 
-			w.Header().Set("Authorization", token)
-			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, "Login successfully!")
-			return
+			if realUser != nil {
+				token := utils.GenerateToken(realUser)
+
+				w.Header().Set("Authorization", token)
+				w.WriteHeader(http.StatusOK)
+				fmt.Fprintf(w, "Login successfully!")
+				return
+			}
+
+			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprintf(w, "Login failed!")
+
 		}
-
-		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, "Login failed!")
-
 	}
 }
 
-func SignUpController(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		body, err := ioutil.ReadAll(r.Body)
+func SignUpController(env *interfaces.Env) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			body, err := ioutil.ReadAll(r.Body)
 
-		utils.CheckErrors(w, err, http.StatusInternalServerError)
+			utils.CheckErrors(w, err, http.StatusInternalServerError)
 
-		var user interfaces.UserInfo
-		json.Unmarshal(body, &user)
+			var user interfaces.UserInfo
+			json.Unmarshal(body, &user)
 
-		status, err := Users.AddOne(&user)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			Users := models.Users{env.DB}
+
+			status, err := Users.AddOne(&user)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+
+			fmt.Fprintf(w, status)
 		}
-
-		fmt.Fprintf(w, status)
 	}
 }
 
-func SignOutController(res http.ResponseWriter, req *http.Request) {
-	var rawToken string
-	if len(req.Header["Authorization"]) > 0 {
-		rawToken = req.Header["Authorization"][0]
+func SignOutController(env *interfaces.Env) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		var rawToken string
+		if len(req.Header["Authorization"]) > 0 {
+			rawToken = req.Header["Authorization"][0]
+		}
+
+		env.RedisDB.SAdd(config.INVALID_TOKENS, rawToken)
+
+		fmt.Println(env.RedisDB.SMembers(config.INVALID_TOKENS))
 	}
-
-	database.RedisConn.SAdd(config.INVALID_TOKENS, rawToken)
-
-	fmt.Println(database.RedisConn.SMembers(config.INVALID_TOKENS))
-
 }

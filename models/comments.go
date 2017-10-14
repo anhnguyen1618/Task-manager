@@ -1,13 +1,18 @@
-package comments
+package models
 
 import (
-	"../../database"
-	"../../interfaces"
+	"database/sql"
 	"time"
+
+	"../interfaces"
 )
 
-func Get(taskID int) []interfaces.Comment {
-	db := database.DBCon
+type Comments struct {
+	Db *sql.DB
+}
+
+func (model *Comments) Get(taskID int) []interfaces.Comment {
+	db := model.Db
 
 	commentRows, err := db.Query(
 		`SELECT ID, content, author, date
@@ -38,8 +43,8 @@ func Get(taskID int) []interfaces.Comment {
 	return comments
 }
 
-func GetById(commentID int) *interfaces.Comment {
-	db := database.DBCon
+func (model *Comments) GetById(commentID int) *interfaces.Comment {
+	db := model.Db
 
 	commentRows := db.QueryRow(
 		`SELECT ID, content, author, date
@@ -62,8 +67,8 @@ func GetById(commentID int) *interfaces.Comment {
 	return comment
 }
 
-func Add(newComment *interfaces.Comment, taskID int) (int64, error) {
-	db := database.DBCon
+func (model *Comments) Add(newComment *interfaces.Comment, taskID int) (int64, error) {
+	db := model.Db
 	result, err := db.Exec(
 		`INSERT INTO comments(ID, content, author, task_id, date)
 		 VALUES(?, ?, ?, ?, ?)`,
@@ -76,8 +81,8 @@ func Add(newComment *interfaces.Comment, taskID int) (int64, error) {
 	return id, nil
 }
 
-func Update(updatedComment *interfaces.Comment) error {
-	db := database.DBCon
+func (model *Comments) Update(updatedComment *interfaces.Comment) error {
+	db := model.Db
 	_, err := db.Exec(
 		`UPDATE comments
 		 SET content = ?
@@ -91,8 +96,8 @@ func Update(updatedComment *interfaces.Comment) error {
 	return nil
 }
 
-func Delete(id int) error {
-	db := database.DBCon
+func (model *Comments) Delete(id int) error {
+	db := model.Db
 	_, err := db.Exec(`DELETE FROM comments WHERE id = ?`, id)
 
 	return err
