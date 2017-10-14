@@ -18,17 +18,20 @@ func InititalizeRoutes(env *interfaces.Env) {
 	loggerMW := middlewares.Logger
 	errorMW := middlewares.MuxErrorHandler
 
+	// Pass db connections to controllers
+	Controllers := &controllers.Controllers{env}
+
 	r.Handle("/public", fs)
-	r.HandleFunc("/", authMW(controllers.LandingController(env)))
-	r.HandleFunc("/login", controllers.LoginController(env))
-	r.HandleFunc("/signUp", controllers.SignUpController(env))
-	r.HandleFunc("/signout", authMW(controllers.SignOutController(env)))
+	r.HandleFunc("/", authMW(Controllers.LandingController))
+	r.HandleFunc("/login", Controllers.LoginController)
+	r.HandleFunc("/signUp", Controllers.SignUpController)
+	r.HandleFunc("/signout", authMW(Controllers.SignOutController))
 
-	r.HandleFunc("/tasks", authMW(controllers.AllTaskController(env)))
-	r.HandleFunc("/tasks/{id}", authMW(controllers.UpdateTaskController(env)))
+	r.HandleFunc("/tasks", authMW(Controllers.AllTaskController))
+	r.HandleFunc("/tasks/{id}", authMW(Controllers.UpdateTaskController))
 
-	r.HandleFunc("/tasks/{id}/comments", authMW(controllers.CommentController(env)))
-	r.HandleFunc("/tasks/{id}/comments/{commentId}", authMW(controllers.UpdateCommentController(env)))
+	r.HandleFunc("/tasks/{id}/comments", authMW(Controllers.CommentController))
+	r.HandleFunc("/tasks/{id}/comments/{commentId}", authMW(Controllers.UpdateCommentController))
 
 	http.HandleFunc("/", loggerMW(errorMW(r)))
 

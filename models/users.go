@@ -8,11 +8,11 @@ import (
 )
 
 type Users struct {
-	Db *sql.DB
+	DB *sql.DB
 }
 
 func (model *Users) ReadAll() {
-	db := model.Db
+	db := model.DB
 	rows, err := db.Query("SELECT * FROM users")
 	if err != nil {
 		panic(err.Error())
@@ -30,7 +30,7 @@ func (model *Users) ReadAll() {
 }
 
 func (model *Users) AddOne(userInfo *(interfaces.UserInfo)) (string, error) {
-	db := model.Db
+	db := model.DB
 
 	password := userInfo.Password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -47,7 +47,7 @@ func (model *Users) AddOne(userInfo *(interfaces.UserInfo)) (string, error) {
 }
 
 func (model *Users) CheckCredential(userInfo *(interfaces.UserInfo)) *(interfaces.UserInfo) {
-	db := model.Db
+	db := model.DB
 	rawPassword := userInfo.Password
 	var hashPassword string
 
