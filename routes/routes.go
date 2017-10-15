@@ -14,9 +14,10 @@ func InititalizeRoutes(env *interfaces.Env) {
 	fs := http.FileServer(http.Dir("/public"))
 
 	// Declare shortHand middlewares
-	authMW := middlewares.Authenticate
-	loggerMW := middlewares.Logger
-	errorMW := middlewares.MuxErrorHandler
+	middlewareEnv := &middlewares.MiddleWares{env}
+	authMW := middlewareEnv.Authenticate
+	loggerMW := middlewareEnv.Logger
+	errorMW := middlewareEnv.MuxErrorHandler
 
 	// Pass db connections to controllers
 	Controllers := &controllers.Controllers{env}

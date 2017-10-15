@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func MuxErrorHandler(next http.Handler) http.HandlerFunc {
+func (env *MiddleWares) MuxErrorHandler(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		defer func() {

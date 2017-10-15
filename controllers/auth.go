@@ -67,8 +67,5 @@ func (controller *Controllers) SignOutController(w http.ResponseWriter, r *http.
 	if len(r.Header["Authorization"]) > 0 {
 		rawToken = r.Header["Authorization"][0]
 	}
-
 	controller.RedisDB.SAdd(config.INVALID_TOKENS, rawToken)
-
-	fmt.Println(controller.RedisDB.SMembers(config.INVALID_TOKENS))
 }

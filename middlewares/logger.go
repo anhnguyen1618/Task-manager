@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func Logger(next http.HandlerFunc) http.HandlerFunc {
+func (env *MiddleWares) Logger(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 

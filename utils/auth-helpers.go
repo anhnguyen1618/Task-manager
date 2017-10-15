@@ -8,6 +8,7 @@ import (
 	"../config"
 	"../interfaces"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/go-redis/redis"
 )
 
 func ExtractContext(r *http.Request) *interfaces.Claims {
@@ -28,9 +29,8 @@ func ExtractToken(r *http.Request) string {
 	return rawToken
 }
 
-func CheckValidToken(token string) bool {
-	// isExist := database.RedisConn.SIsMember(config.INVALID_TOKENS, token).Val()
-	isExist := false
+func CheckValidToken(redisConn *redis.Client, token string) bool {
+	isExist := redisConn.SIsMember(config.INVALID_TOKENS, token).Val()
 	return !isExist
 }
 
