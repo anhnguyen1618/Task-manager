@@ -1,13 +1,14 @@
 package controllers
 
 import (
-	"../utils"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"../utils"
 )
 
-func LandingController(w http.ResponseWriter, r *http.Request) {
+func (controller *Controllers) LandingController(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		claims := utils.ExtractContext(r)
 		fmt.Println(claims)
@@ -17,4 +18,5 @@ func LandingController(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Fprintf(w, string(data))
 	}
+
 }

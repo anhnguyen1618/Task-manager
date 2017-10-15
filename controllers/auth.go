@@ -1,18 +1,18 @@
 package controllers
 
 import (
-	"../config"
-	"../database"
-	"../interfaces"
-	Users "../models/users"
-	"../utils"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"../config"
+	"../interfaces"
+	"../models"
+	"../utils"
 )
 
-func LoginController(w http.ResponseWriter, r *http.Request) {
+func (controller *Controllers) LoginController(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "POST" {
 		body, err := ioutil.ReadAll(r.Body)
@@ -21,6 +21,8 @@ func LoginController(w http.ResponseWriter, r *http.Request) {
 
 		var user interfaces.UserInfo
 		json.Unmarshal(body, &user)
+
+		Users := models.Users{controller.DB}
 
 		realUser := Users.CheckCredential(&user)
 
@@ -39,7 +41,7 @@ func LoginController(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func SignUpController(w http.ResponseWriter, r *http.Request) {
+func (controller *Controllers) SignUpController(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		body, err := ioutil.ReadAll(r.Body)
 
@@ -47,6 +49,8 @@ func SignUpController(w http.ResponseWriter, r *http.Request) {
 
 		var user interfaces.UserInfo
 		json.Unmarshal(body, &user)
+
+		Users := models.Users{controller.DB}
 
 		status, err := Users.AddOne(&user)
 		if err != nil {
@@ -57,14 +61,11 @@ func SignUpController(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func SignOutController(res http.ResponseWriter, req *http.Request) {
+func (controller *Controllers) SignOutController(w http.ResponseWriter, r *http.Request) {
+
 	var rawToken string
-	if len(req.Header["Authorization"]) > 0 {
-		rawToken = req.Header["Authorization"][0]
+	if len(r.Header["Authorization"]) > 0 {
+		rawToken = r.Header["Authorization"][0]
 	}
-
-	database.RedisConn.SAdd(config.INVALID_TOKENS, rawToken)
-
-	fmt.Println(database.RedisConn.SMembers(config.INVALID_TOKENS))
-
+	controller.RedisDB.SAdd(config.INVALID_TOKENS, rawToken)
 }

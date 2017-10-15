@@ -1,16 +1,18 @@
-package tasks
+package models
 
 import (
-	"../../database"
-	"../../interfaces"
-	CommentModel "../comments"
+	"database/sql"
 	"time"
+
+	"../interfaces"
 )
 
-// var db = database.DBCon
+type Tasks struct {
+	DB *sql.DB
+}
 
-func GetAll() []interfaces.TaskQuery {
-	db := database.DBCon
+func (model *Tasks) GetAll() []interfaces.TaskQuery {
+	db := model.DB
 	rows, err := db.Query(
 		`SELECT ID, title, status, assignee, assignor, start_time, end_time,description
 		 	FROM tasks`)
@@ -19,6 +21,8 @@ func GetAll() []interfaces.TaskQuery {
 	}
 
 	tasks := []interfaces.TaskQuery{}
+
+	commentModel := &Comments{model.DB}
 
 	for rows.Next() {
 		var id int
@@ -35,7 +39,7 @@ func GetAll() []interfaces.TaskQuery {
 			panic(err.Error())
 		}
 
-		comments := CommentModel.Get(id)
+		comments := commentModel.Get(id)
 
 		task := interfaces.TaskQuery{id, title, status, assignee, assignor, start_time, end_time, description, comments}
 		tasks = append(tasks, task)
@@ -44,8 +48,8 @@ func GetAll() []interfaces.TaskQuery {
 	return tasks
 }
 
-func GetOne(id int) *interfaces.TaskQuery {
-	db := database.DBCon
+func (model *Tasks) GetOne(id int) *interfaces.TaskQuery {
+	db := model.DB
 	row := db.QueryRow(
 		`SELECT title, status, assignee, assignor, start_time, end_time,description
 		 	FROM tasks
@@ -62,13 +66,15 @@ func GetOne(id int) *interfaces.TaskQuery {
 	if err != nil {
 		return nil
 	}
-	comments := CommentModel.Get(id)
+
+	commentModel := &Comments{model.DB}
+	comments := commentModel.Get(id)
 	task := &interfaces.TaskQuery{id, title, status, assignee, assignor, start_time, end_time, description, comments}
 	return task
 }
 
-func Add(task *interfaces.Task) (int64, error) {
-	db := database.DBCon
+func (model *Tasks) Add(task *interfaces.Task) (int64, error) {
+	db := model.DB
 
 	result, err := db.Exec(
 		`INSERT INTO tasks(id, title, status, assignee, assignor, start_time, end_time, description)
@@ -83,8 +89,8 @@ func Add(task *interfaces.Task) (int64, error) {
 	return id, nil
 }
 
-func Update(task *interfaces.Task) error {
-	db := database.DBCon
+func (model *Tasks) Update(task *interfaces.Task) error {
+	db := model.DB
 
 	_, err := db.Exec(
 		`UPDATE tasks 
@@ -99,8 +105,8 @@ func Update(task *interfaces.Task) error {
 	return err
 }
 
-func Delete(id int) error {
-	db := database.DBCon
+func (model *Tasks) Delete(id int) error {
+	db := model.DB
 
 	_, err := db.Exec(`DELETE FROM tasks WHERE id = ?`, id)
 

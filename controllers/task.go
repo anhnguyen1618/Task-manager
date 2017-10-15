@@ -1,27 +1,28 @@
 package controllers
 
 import (
-	"../interfaces"
-	Tasks "../models/tasks"
-	"../utils"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"../interfaces"
+	"../models"
+	"../utils"
+	"github.com/gorilla/mux"
 )
 
-func AllTaskController(w http.ResponseWriter, r *http.Request) {
-
+func (controller *Controllers) AllTaskController(w http.ResponseWriter, r *http.Request) {
+	Tasks := &models.Tasks{controller.DB}
 	if r.Method == "GET" {
-
 		tasks := Tasks.GetAll()
 		result, err := json.Marshal(tasks)
 		utils.CheckErrors(w, err, http.StatusInternalServerError)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(result)
 		return
+
 	} else if r.Method == "POST" {
 
 		body, err := ioutil.ReadAll(r.Body)
@@ -46,11 +47,13 @@ func AllTaskController(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func UpdateTaskController(w http.ResponseWriter, r *http.Request) {
+func (controller *Controllers) UpdateTaskController(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 
 	utils.CheckErrors(w, err, http.StatusBadRequest)
+
+	Tasks := &models.Tasks{controller.DB}
 
 	if r.Method == "PUT" {
 		body, err := ioutil.ReadAll(r.Body)

@@ -1,18 +1,20 @@
 package middlewares
 
 import (
-	"../config"
-	"../utils"
 	"context"
 	"fmt"
 	"net/http"
+
+	"../config"
+	"../utils"
 )
 
-func Authenticate(next http.HandlerFunc) http.HandlerFunc {
+func (env *MiddleWares) Authenticate(next http.HandlerFunc) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
+
 		rawToken := utils.ExtractToken(req)
 
-		if rawToken != "" && !utils.CheckValidToken(rawToken) {
+		if rawToken != "" && !utils.CheckValidToken(env.RedisDB, rawToken) {
 			res.WriteHeader(http.StatusUnauthorized)
 			fmt.Fprintf(res, "Unauthorized access!")
 			return

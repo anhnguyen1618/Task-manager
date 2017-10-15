@@ -1,13 +1,18 @@
-package users
+package models
 
 import (
-	"../../database"
-	"../../interfaces"
+	"database/sql"
+
+	"../interfaces"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func readAll() {
-	db := database.DBCon
+type Users struct {
+	DB *sql.DB
+}
+
+func (model *Users) ReadAll() {
+	db := model.DB
 	rows, err := db.Query("SELECT * FROM users")
 	if err != nil {
 		panic(err.Error())
@@ -24,8 +29,8 @@ func readAll() {
 	}
 }
 
-func AddOne(userInfo *(interfaces.UserInfo)) (string, error) {
-	db := database.DBCon
+func (model *Users) AddOne(userInfo *(interfaces.UserInfo)) (string, error) {
+	db := model.DB
 
 	password := userInfo.Password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -41,8 +46,8 @@ func AddOne(userInfo *(interfaces.UserInfo)) (string, error) {
 	return "Create successfully", nil
 }
 
-func CheckCredential(userInfo *(interfaces.UserInfo)) *(interfaces.UserInfo) {
-	db := database.DBCon
+func (model *Users) CheckCredential(userInfo *(interfaces.UserInfo)) *(interfaces.UserInfo) {
+	db := model.DB
 	rawPassword := userInfo.Password
 	var hashPassword string
 

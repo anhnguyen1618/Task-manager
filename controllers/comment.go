@@ -1,18 +1,20 @@
 package controllers
 
 import (
-	"../interfaces"
-	Comments "../models/comments"
-	"../utils"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"../interfaces"
+	"../models"
+	"../utils"
+	"github.com/gorilla/mux"
 )
 
-func CommentController(w http.ResponseWriter, r *http.Request) {
+func (controller *Controllers) CommentController(w http.ResponseWriter, r *http.Request) {
+
 	vars := mux.Vars(r)
 	taskId, err := strconv.Atoi(vars["id"])
 
@@ -26,6 +28,8 @@ func CommentController(w http.ResponseWriter, r *http.Request) {
 		var comment interfaces.Comment
 		json.Unmarshal(body, &comment)
 
+		Comments := &models.Comments{controller.DB}
+
 		commentID, err := Comments.Add(&comment, taskId)
 
 		utils.CheckErrors(w, err, http.StatusInternalServerError)
@@ -37,13 +41,15 @@ func CommentController(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func UpdateCommentController(w http.ResponseWriter, r *http.Request) {
+func (controller *Controllers) UpdateCommentController(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	commentId, err := strconv.Atoi(vars["commentId"])
 
 	utils.CheckErrors(w, err, http.StatusBadRequest)
 
 	user := utils.ExtractContext(r)
+
+	Comments := &models.Comments{controller.DB}
 	currentComment := Comments.GetById(commentId)
 
 	if currentComment == nil {
@@ -95,5 +101,4 @@ func UpdateCommentController(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "comment "+vars["commentId"]+" removed!")
 		return
 	}
-
 }

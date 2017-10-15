@@ -1,13 +1,14 @@
 package utils
 
 import (
-	"../config"
-	"../database"
-	"../interfaces"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"time"
+
+	"../config"
+	"../interfaces"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/go-redis/redis"
 )
 
 func ExtractContext(r *http.Request) *interfaces.Claims {
@@ -28,8 +29,8 @@ func ExtractToken(r *http.Request) string {
 	return rawToken
 }
 
-func CheckValidToken(token string) bool {
-	isExist := database.RedisConn.SIsMember(config.INVALID_TOKENS, token).Val()
+func CheckValidToken(redisConn *redis.Client, token string) bool {
+	isExist := redisConn.SIsMember(config.INVALID_TOKENS, token).Val()
 	return !isExist
 }
 
