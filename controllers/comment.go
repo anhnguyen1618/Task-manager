@@ -43,18 +43,18 @@ func (controller *Controllers) CommentController(w http.ResponseWriter, r *http.
 
 func (controller *Controllers) UpdateCommentController(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	commentId, err := strconv.Atoi(vars["commentId"])
+	commentID, err := strconv.Atoi(vars["commentID"])
 
 	utils.CheckErrors(w, err, http.StatusBadRequest)
 
 	user := utils.ExtractContext(r)
 
 	Comments := &models.Comments{controller.DB}
-	currentComment := Comments.GetById(commentId)
+	currentComment := Comments.GetByID(commentID)
 
 	if currentComment == nil {
 		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "Comment "+vars["commentId"]+" not found!")
+		fmt.Fprintf(w, "Comment "+vars["commentID"]+" not found!")
 		return
 	}
 
@@ -78,7 +78,7 @@ func (controller *Controllers) UpdateCommentController(w http.ResponseWriter, r 
 
 		var updatedComment interfaces.Comment
 		json.Unmarshal(body, &updatedComment)
-		updatedComment.Id = commentId
+		updatedComment.Id = commentID
 
 		if &updatedComment == nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -90,15 +90,15 @@ func (controller *Controllers) UpdateCommentController(w http.ResponseWriter, r 
 		utils.CheckErrors(w, err, http.StatusInternalServerError)
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "comment "+vars["commentId"]+" updated!")
+		fmt.Fprintf(w, "comment "+vars["commentID"]+" updated!")
 		return
 	}
 
 	if r.Method == "DELETE" {
-		err := Comments.Delete(commentId)
+		err := Comments.Delete(commentID)
 		utils.CheckErrors(w, err, http.StatusInternalServerError)
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "comment "+vars["commentId"]+" removed!")
+		fmt.Fprintf(w, "comment "+vars["commentID"]+" removed!")
 		return
 	}
 }

@@ -32,7 +32,7 @@ func InititalizeRoutes(env *interfaces.Env) {
 	r.HandleFunc("/tasks/{id}", authMW(Controllers.UpdateTaskController))
 
 	r.HandleFunc("/tasks/{id}/comments", authMW(Controllers.CommentController))
-	r.HandleFunc("/tasks/{id}/comments/{commentId}", authMW(Controllers.UpdateCommentController))
+	r.HandleFunc("/tasks/{id}/comments/{commentID}", authMW(Controllers.UpdateCommentController))
 
 	http.HandleFunc("/", loggerMW(errorMW(r)))
 

@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	"../interfaces"
@@ -11,7 +12,7 @@ type Comments struct {
 	Db *sql.DB
 }
 
-func (model *Comments) Get(taskID int) []interfaces.Comment {
+func (model *Comments) GetByTaskID(taskID int) []interfaces.Comment {
 	db := model.Db
 
 	commentRows, err := db.Query(
@@ -26,43 +27,41 @@ func (model *Comments) Get(taskID int) []interfaces.Comment {
 	comments := []interfaces.Comment{}
 
 	for commentRows.Next() {
-		var conmentId int
+		var commentID int
 		var content string
 		var author string
 		var date string
-		err = commentRows.Scan(&conmentId, &content, &author, &date)
+		err = commentRows.Scan(&commentID, &content, &author, &date)
 
 		if err != nil {
 			panic(err.Error())
 		}
 
-		comment := interfaces.Comment{conmentId, content, author, date}
+		comment := interfaces.Comment{commentID, content, author, date}
 		comments = append(comments, comment)
 	}
 
 	return comments
 }
 
-func (model *Comments) GetById(commentID int) *interfaces.Comment {
+func (model *Comments) GetByID(commentID int) *interfaces.Comment {
 	db := model.Db
 
 	commentRows := db.QueryRow(
-		`SELECT ID, content, author, date
+		`SELECT content, author, date
 		 FROM comments
 		 WHERE ID=?`, commentID)
 
-	var conmentId int
 	var content string
 	var author string
 	var date string
-	err := commentRows.Scan(&conmentId, &content, &author, &date)
+	err := commentRows.Scan(&content, &author, &date)
 
 	if err != nil {
 		return nil
-		// panic(err.Error())
 	}
 
-	comment := &interfaces.Comment{conmentId, content, author, date}
+	comment := &interfaces.Comment{commentID, content, author, date}
 
 	return comment
 }
@@ -74,6 +73,7 @@ func (model *Comments) Add(newComment *interfaces.Comment, taskID int) (int64, e
 		 VALUES(?, ?, ?, ?, ?)`,
 		nil, newComment.Content, newComment.Author, taskID, time.Now().String())
 	if err != nil {
+		fmt.Println(err)
 		return 0, err
 	}
 

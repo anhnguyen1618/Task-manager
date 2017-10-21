@@ -39,7 +39,7 @@ func (model *Tasks) GetAll() []interfaces.TaskQuery {
 			panic(err.Error())
 		}
 
-		comments := commentModel.Get(id)
+		comments := commentModel.GetByTaskID(id)
 
 		task := interfaces.TaskQuery{id, title, status, assignee, assignor, start_time, end_time, description, comments}
 		tasks = append(tasks, task)
@@ -68,7 +68,7 @@ func (model *Tasks) GetOne(id int) *interfaces.TaskQuery {
 	}
 
 	commentModel := &Comments{model.DB}
-	comments := commentModel.Get(id)
+	comments := commentModel.GetByTaskID(id)
 	task := &interfaces.TaskQuery{id, title, status, assignee, assignor, start_time, end_time, description, comments}
 	return task
 }
