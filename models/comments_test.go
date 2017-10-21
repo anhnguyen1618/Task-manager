@@ -29,7 +29,7 @@ func TestGetAllCommentsByID(t *testing.T) {
 		interfaces.Comment{2, "comment 2", "world", "20-10-2013"},
 	}
 
-	comments := commentModel.Get(1)
+	comments := commentModel.GetByTaskID(1)
 
 	// we make sure that all expectations were met
 	if err := mock.ExpectationsWereMet(); err != nil {
