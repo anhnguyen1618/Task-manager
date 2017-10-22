@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"../interfaces"
+	"github.com/anhnguyen300795/Task-manager/interfaces"
 	"github.com/DATA-DOG/go-sqlmock"
 )
 

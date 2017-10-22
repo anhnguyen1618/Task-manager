@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"../interfaces"
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
+	"github.com/anhnguyen300795/Task-manager/interfaces"
 	"github.com/gorilla/mux"
 )
 

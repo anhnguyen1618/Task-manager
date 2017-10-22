@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"../utils"
+	"github.com/anhnguyen300795/Task-manager/utils"
 )
 
 func (controller *Controllers) LandingController(w http.ResponseWriter, r *http.Request) {

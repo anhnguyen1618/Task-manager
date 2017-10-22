@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"../config"
-	"../utils"
+	"github.com/anhnguyen300795/Task-manager/config"
+	"github.com/anhnguyen300795/Task-manager/utils"
 )
 
 func (env *MiddleWares) Authenticate(next http.HandlerFunc) http.HandlerFunc {

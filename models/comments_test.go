@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"../interfaces"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/anhnguyen300795/Task-manager/interfaces"
 )
 
 func TestGetAllCommentsByID(t *testing.T) {

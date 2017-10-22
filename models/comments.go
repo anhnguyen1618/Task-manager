@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"../interfaces"
+	"github.com/anhnguyen300795/Task-manager/interfaces"
 )
 
 type Comments struct {

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"../interfaces"
+	"github.com/anhnguyen300795/Task-manager/interfaces"
 )
 
 type Controllers struct {

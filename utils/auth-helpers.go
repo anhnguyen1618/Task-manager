@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"../config"
-	"../interfaces"
+	"github.com/anhnguyen300795/Task-manager/config"
+	"github.com/anhnguyen300795/Task-manager/interfaces"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-redis/redis"
 )

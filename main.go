@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"./database"
-	"./interfaces"
-	"./routes"
+	"github.com/anhnguyen300795/Task-manager/database"
+	"github.com/anhnguyen300795/Task-manager/interfaces"
+	"github.com/anhnguyen300795/Task-manager/routes"
 )
 
 func main() {
