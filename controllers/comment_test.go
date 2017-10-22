@@ -1,9 +1,18 @@
 package controllers
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestSimple(t *testing.T) {
-	if 1+1 != 2 {
-		t.Error(`nyan.Meowify("cats") != "nyan"`)
-	}
+
+	// env := &interfaces.Env{nil, nil}
+	// Controllers := &Controllers{env}
+
+	// r := httptest.NewRequest("DELETE", "http://example.com/foo", nil)
+	// w := httptest.NewRecorder()
+	// context.Set(r, "commentID", "1")
+	// context.Set(r, "commentID", "1")
+
+	// Controllers.UpdateCommentController(w, r)
 }
