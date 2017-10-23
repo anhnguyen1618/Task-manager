@@ -1,1 +1,1 @@
-“web: github.com/anhnguyen300795/Task-manager”
+“web: go run main.go”
