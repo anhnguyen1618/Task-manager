@@ -1,0 +1,60 @@
+{
+	"ImportPath": "github.com/anhnguyen300795/Task-manager",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v79",
+	"Deps": [
+		{
+			"ImportPath": "github.com/dgrijalva/jwt-go",
+			"Comment": "v3.0.0-20-ga539ee1",
+			"Rev": "a539ee1a749a2b895533f979515ac7e6e0f5b650"
+		},
+		{
+			"ImportPath": "github.com/go-redis/redis",
+			"Comment": "v6.7.1-2-g9c20773",
+			"Rev": "9c20773cb24624a4ad05cddb60583b61f4ffa701"
+		},
+		{
+			"ImportPath": "github.com/go-redis/redis/internal",
+			"Comment": "v6.7.1-2-g9c20773",
+			"Rev": "9c20773cb24624a4ad05cddb60583b61f4ffa701"
+		},
+		{
+			"ImportPath": "github.com/go-redis/redis/internal/consistenthash",
+			"Comment": "v6.7.1-2-g9c20773",
+			"Rev": "9c20773cb24624a4ad05cddb60583b61f4ffa701"
+		},
+		{
+			"ImportPath": "github.com/go-redis/redis/internal/hashtag",
+			"Comment": "v6.7.1-2-g9c20773",
+			"Rev": "9c20773cb24624a4ad05cddb60583b61f4ffa701"
+		},
+		{
+			"ImportPath": "github.com/go-redis/redis/internal/pool",
+			"Comment": "v6.7.1-2-g9c20773",
+			"Rev": "9c20773cb24624a4ad05cddb60583b61f4ffa701"
+		},
+		{
+			"ImportPath": "github.com/go-redis/redis/internal/proto",
+			"Comment": "v6.7.1-2-g9c20773",
+			"Rev": "9c20773cb24624a4ad05cddb60583b61f4ffa701"
+		},
+		{
+			"ImportPath": "github.com/go-sql-driver/mysql",
+			"Comment": "v1.3-37-gee359f9",
+			"Rev": "ee359f95877bdef36cbb602711e49b6f0becfca9"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Comment": "v1.5.0-3-g9bd9ff2",
+			"Rev": "9bd9ff2d1d2a0660d35050674f2c3112547997af"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/bcrypt",
+			"Rev": "9419663f5a44be8b34ca85f08abc5fe1be11f8a3"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/blowfish",
+			"Rev": "9419663f5a44be8b34ca85f08abc5fe1be11f8a3"
+		}
+	]
+}
