@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/anhnguyen300795/Task-manager/interfaces"
+	"github.com/anhnguyen300795/Task-manager/src/interfaces"
 )
 
 type Tasks struct {

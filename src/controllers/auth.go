@@ -6,10 +6,10 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/anhnguyen300795/Task-manager/config"
-	"github.com/anhnguyen300795/Task-manager/interfaces"
-	"github.com/anhnguyen300795/Task-manager/models"
-	"github.com/anhnguyen300795/Task-manager/utils"
+	"github.com/anhnguyen300795/Task-manager/src/config"
+	"github.com/anhnguyen300795/Task-manager/src/interfaces"
+	"github.com/anhnguyen300795/Task-manager/src/models"
+	"github.com/anhnguyen300795/Task-manager/src/utils"
 )
 
 func (controller *Controllers) LoginController(w http.ResponseWriter, r *http.Request) {

@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/anhnguyen300795/Task-manager/database"
-	"github.com/anhnguyen300795/Task-manager/interfaces"
-	"github.com/anhnguyen300795/Task-manager/routes"
+	"github.com/anhnguyen300795/Task-manager/src/database"
+	"github.com/anhnguyen300795/Task-manager/src/interfaces"
+	"github.com/anhnguyen300795/Task-manager/src/routes"
 )
 
 func main() {

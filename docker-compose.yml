@@ -1,0 +1,13 @@
+version: '2.0'
+
+services:
+  back-end:
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src:/go/src/github.com/anhnguyen300795/Task-manager/src/src
+    environment:
+      - MODE=development
+      - PORT=8080

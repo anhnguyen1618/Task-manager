@@ -3,7 +3,7 @@ package models
 import (
 	"database/sql"
 
-	"github.com/anhnguyen300795/Task-manager/interfaces"
+	"github.com/anhnguyen300795/Task-manager/src/interfaces"
 	"golang.org/x/crypto/bcrypt"
 )
 

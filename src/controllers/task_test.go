@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
-	"github.com/anhnguyen300795/Task-manager/interfaces"
+	"github.com/anhnguyen300795/Task-manager/src/interfaces"
 	"github.com/gorilla/mux"
 )
 

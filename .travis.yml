@@ -1,6 +1,6 @@
 language: go
 go:
-    - 1.8
-script: go install && go test -v ./...
+    - 1.9
+script: cd src && go install && go test -v ./...
 notifications:
   email: false

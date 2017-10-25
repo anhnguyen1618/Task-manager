@@ -3,9 +3,9 @@ package routes
 import (
 	"net/http"
 
-	"github.com/anhnguyen300795/Task-manager/controllers"
-	"github.com/anhnguyen300795/Task-manager/interfaces"
-	"github.com/anhnguyen300795/Task-manager/middlewares"
+	"github.com/anhnguyen300795/Task-manager/src/controllers"
+	"github.com/anhnguyen300795/Task-manager/src/interfaces"
+	"github.com/anhnguyen300795/Task-manager/src/middlewares"
 	"github.com/gorilla/mux"
 )
 

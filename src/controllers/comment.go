@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/anhnguyen300795/Task-manager/interfaces"
-	"github.com/anhnguyen300795/Task-manager/models"
-	"github.com/anhnguyen300795/Task-manager/utils"
+	"github.com/anhnguyen300795/Task-manager/src/interfaces"
+	"github.com/anhnguyen300795/Task-manager/src/models"
+	"github.com/anhnguyen300795/Task-manager/src/utils"
 	"github.com/gorilla/mux"
 )
 
