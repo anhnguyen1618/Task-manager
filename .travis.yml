@@ -46,6 +46,7 @@ before_deploy:
   - gcloud --quiet version
   - gcloud --quiet components update
   - gcloud --quiet components update kubectl
+  - chmod +x deploy-production.sh
 
 deploy:
   - provider: script
