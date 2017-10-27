@@ -14,9 +14,9 @@ gcloud --quiet container clusters get-credentials $CLUSTER_NAME
 
 gcloud docker -- push gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME}
 
-yes | gcloud beta container images add-tag gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME}:$TRAVIS_COMMIT gcr.io/${PROJECT_NAME_PRD}/${DOCKER_IMAGE_NAME}:latest
+yes | gcloud beta container images add-tag gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME}:$TRAVIS_COMMIT gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME}:latest
 
 kubectl config view
 kubectl config current-context
 
-kubectl set image deployment/${KUBE_DEPLOYMENT_NAME} ${KUBE_DEPLOYMENT_CONTAINER_NAME}=gcr.io/${PROJECT_NAME_PRD}/${DOCKER_IMAGE_NAME}:$TRAVIS_COMMIT
+kubectl set image deployment/${KUBE_DEPLOYMENT_NAME} ${KUBE_DEPLOYMENT_CONTAINER_NAME}=gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME}:$TRAVIS_COMMIT
