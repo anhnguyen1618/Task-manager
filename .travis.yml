@@ -22,7 +22,7 @@ env:
     - KUBE_DEPLOYMENT_CONTAINER_NAME=task-manager-web
 
 before_script:
-- cd src && go install
+- cd src && go get ./...
 
 script: go test -v ./...
 
