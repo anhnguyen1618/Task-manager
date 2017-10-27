@@ -23,7 +23,7 @@ func InititalizeRoutes(env *interfaces.Env) {
 	Controllers := &controllers.Controllers{env}
 
 	r.Handle("/public", fs)
-	r.HandleFunc("/", Controllers.LandingController)
+	r.HandleFunc("/", authMW(Controllers.LandingController))
 	r.HandleFunc("/login", Controllers.LoginController)
 	r.HandleFunc("/signUp", Controllers.SignUpController)
 	r.HandleFunc("/signout", authMW(Controllers.SignOutController))
