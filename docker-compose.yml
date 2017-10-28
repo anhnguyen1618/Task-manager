@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./src:/go/src/github.com/anhnguyen300795/Task-manager/src/src
+      - ./src:/go/src/github.com/anhnguyen300795/Task-manager/src
     environment:
       - MODE=development
       - PORT=8080
