@@ -11,22 +11,27 @@ type Users struct {
 	DB *sql.DB
 }
 
-func (model *Users) ReadAll() {
+func (model *Users) GetAll() []interfaces.UserInfo {
 	db := model.DB
 	rows, err := db.Query("SELECT * FROM users")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	for rows.Next() {
-		var username, password, email, role string
+	allUsers := []interfaces.UserInfo{}
 
-		err = rows.Scan(&username, &password, &email, &role)
+	for rows.Next() {
+		var username, email, password, role string
+
+		err = rows.Scan(&username, &email, &password, &role)
 
 		if err != nil {
 			panic(err.Error())
 		}
+
+		allUsers = append(allUsers, interfaces.UserInfo{username, "", email, role})
 	}
+	return allUsers
 }
 
 func (model *Users) AddOne(userInfo *(interfaces.UserInfo)) (string, error) {

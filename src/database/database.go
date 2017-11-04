@@ -7,7 +7,9 @@ import (
 )
 
 func Initialize() *sql.DB {
-	DBCon, err := sql.Open("mysql", "test:test@tcp(35.198.190.39)/taskmanager")
+
+	// test:test@tcp(35.198.190.39)/taskmanager
+	DBCon, err := sql.Open("mysql", "root@tcp(127.0.0.1:3306)/taskManager")
 
 	if err != nil {
 		panic(err.Error())

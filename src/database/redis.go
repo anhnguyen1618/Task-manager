@@ -6,7 +6,8 @@ import (
 
 func InitializeRedis() *redis.Client {
 	RedisConn := redis.NewClient(&redis.Options{
-		Addr:     "redis-17404.c1.eu-west-1-3.ec2.cloud.redislabs.com:17404",
+		// redis-17404.c1.eu-west-1-3.ec2.cloud.redislabs.com:17404
+		Addr:     "localhost:6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})

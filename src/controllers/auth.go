@@ -29,9 +29,13 @@ func (controller *Controllers) LoginController(w http.ResponseWriter, r *http.Re
 		if realUser != nil {
 			token := utils.GenerateToken(realUser)
 
+			result, err := json.Marshal(realUser)
+			utils.CheckErrors(w, err, http.StatusInternalServerError)
+
 			w.Header().Set("Authorization", token)
+			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, "Login successfully!")
+			w.Write(result)
 			return
 		}
 
@@ -68,4 +72,15 @@ func (controller *Controllers) SignOutController(w http.ResponseWriter, r *http.
 		rawToken = r.Header["Authorization"][0]
 	}
 	controller.RedisDB.SAdd(config.INVALID_TOKENS, rawToken)
+}
+
+func (controller *Controllers) CurrentUserController(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		user := utils.ExtractContext(r)
+		filteredData := interfaces.UserInfo{user.UserName, "", user.Email, user.Role}
+		result, err := json.Marshal(filteredData)
+		utils.CheckErrors(w, err, http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(result)
+	}
 }
