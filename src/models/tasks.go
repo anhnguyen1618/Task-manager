@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/anhnguyen300795/Task-manager/src/interfaces"
@@ -71,7 +70,6 @@ func (model *Tasks) GetOne(id int) *interfaces.TaskQuery {
 	commentModel := &Comments{model.DB}
 	comments := commentModel.GetByTaskID(id)
 	task := &interfaces.TaskQuery{id, title, status, assignee, assignor, start_time, end_time, description, comments}
-	fmt.Println(task)
 	return task
 }
 
