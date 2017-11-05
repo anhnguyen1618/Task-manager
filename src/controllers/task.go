@@ -37,12 +37,15 @@ func (controller *Controllers) AllTaskController(w http.ResponseWriter, r *http.
 			return
 		}
 
-		id, err := Tasks.Add(&task)
-
+		createdTask, err := Tasks.Add(&task)
 		utils.CheckErrors(w, err, http.StatusInternalServerError)
 
+		resPayload, err := json.Marshal(createdTask)
+		utils.CheckErrors(w, err, http.StatusInternalServerError)
+
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "task "+strconv.FormatInt(id, 10)+" created!")
+		w.Write(resPayload)
 		return
 	}
 }
@@ -71,11 +74,13 @@ func (controller *Controllers) UpdateTaskController(w http.ResponseWriter, r *ht
 		task.Id = id
 
 		err = Tasks.Update(&task)
-
 		utils.CheckErrors(w, err, http.StatusInternalServerError)
 
+		resPayload, _ := json.Marshal(task)
+
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "task "+vars["id"]+" updated!")
+		w.Write(resPayload)
 		return
 	}
 
