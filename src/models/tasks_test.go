@@ -106,15 +106,30 @@ func TestAddTask(t *testing.T) {
 	mock.ExpectExec("^INSERT INTO tasks(.+)").
 		WillReturnResult(result)
 
-	taskID, _ := taskModel.Add(&interfaces.Task{1, "title1", "todo", "tester1", "assignor1", "20-10-2013", "20-10-2013", "testDescription"})
+	rows := sqlmock.NewRows([]string{"title", "status", "assignee", "assignor", "start_time", "end_time", "description"}).
+		AddRow("title1", "todo", "tester1", "assignor1", "20-10-2013", "20-10-2013", "testDescription")
+
+	mock.ExpectQuery("^SELECT (.+) FROM tasks (.+)").
+		WithArgs(1).
+		WillReturnRows(rows)
+
+	commentRows := sqlmock.NewRows([]string{"ID", "content", "author", "date"})
+
+	mock.ExpectQuery("^SELECT (.+) FROM comments").
+		WithArgs(1).
+		WillReturnRows(commentRows)
+
+	task, _ := taskModel.Add(&interfaces.Task{1, "title1", "todo", "tester1", "assignor1", "20-10-2013", "20-10-2013", "testDescription"})
 
 	// we make sure that all expectations were met
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expections: %s", err)
 	}
 
-	if taskID != 1 {
-		t.Error(`Comments data are not added`)
+	expectedTask := &interfaces.TaskQuery{1, "title1", "todo", "tester1", "assignor1", "20-10-2013", "20-10-2013", "testDescription", []interfaces.Comment{}}
+
+	if !reflect.DeepEqual(task, expectedTask) {
+		t.Error(`Comments data are not expected`)
 	}
 }
 

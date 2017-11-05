@@ -73,7 +73,7 @@ func (model *Tasks) GetOne(id int) *interfaces.TaskQuery {
 	return task
 }
 
-func (model *Tasks) Add(task *interfaces.Task) (int64, error) {
+func (model *Tasks) Add(task *interfaces.Task) (*interfaces.TaskQuery, error) {
 	db := model.DB
 
 	result, err := db.Exec(
@@ -82,11 +82,13 @@ func (model *Tasks) Add(task *interfaces.Task) (int64, error) {
 		nil, task.Title, task.Status, task.Assignee, task.Assignor, time.Now().String(), task.EndTime, task.Description)
 
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	id, _ := result.LastInsertId()
-	return id, nil
+
+	createdTask := model.GetOne(int(id))
+	return createdTask, nil
 }
 
 func (model *Tasks) Update(task *interfaces.Task) error {

@@ -88,9 +88,29 @@ func TestCommentControllerPOST(t *testing.T) {
 	mock.ExpectExec("^INSERT INTO tasks(.+)").
 		WillReturnResult(result)
 
+	rows := sqlmock.NewRows([]string{"title", "status", "assignee", "assignor", "start_time", "end_time", "description"}).
+		AddRow("title1", "todo", "tester1", "assignor1", "20-10-2013", "20-10-2013", "testDescription")
+
+	mock.ExpectQuery("^SELECT (.+) FROM tasks (.+)").
+		WithArgs(1).
+		WillReturnRows(rows)
+
+	commentRows := sqlmock.NewRows([]string{"ID", "content", "author", "date"}).
+		AddRow(1, "comment 1", "hello", "20-10-2013")
+
+	mock.ExpectQuery("^SELECT (.+) FROM comments").
+		WithArgs(1).
+		WillReturnRows(commentRows)
+
+	expectedComments := []interfaces.Comment{
+		interfaces.Comment{1, "comment 1", "hello", "20-10-2013"},
+	}
+
+	expectedTask := interfaces.TaskQuery{1, "title1", "todo", "tester1", "assignor1", "20-10-2013", "20-10-2013", "testDescription", expectedComments}
+
 	Controllers.AllTaskController(w, r)
 
-	AssertString(w.Body.Bytes(), "task 1 created!", t)
+	AssertJSON(w.Body.Bytes(), expectedTask, t)
 }
 
 func TestUpdateTaskControllerPUT(t *testing.T) {
@@ -110,10 +130,13 @@ func TestUpdateTaskControllerPUT(t *testing.T) {
 	mock.ExpectExec("^UPDATE tasks SET").
 		WillReturnResult(result)
 
-	r := httptest.NewRequest("PUT", "/tasks/1", nil)
+	reqBody := interfaces.Task{1, "title1", "todo", "tester1", "assignor1", "20-10-2013", "20-10-2013", "testDescription"}
+	jsonValue, _ := json.Marshal(reqBody)
+
+	r := httptest.NewRequest("PUT", "/tasks/1", bytes.NewBuffer(jsonValue))
 	w := httptest.NewRecorder()
 
 	router.ServeHTTP(w, r)
 
-	AssertString(w.Body.Bytes(), "task 1 updated!", t)
+	AssertJSON(w.Body.Bytes(), reqBody, t)
 }
