@@ -34,21 +34,36 @@ func (model *Users) GetAll() []interfaces.UserInfo {
 	return allUsers
 }
 
-func (model *Users) AddOne(userInfo *(interfaces.UserInfo)) (string, error) {
+func (model *Users) AddOne(userInfo *(interfaces.UserInfo)) *interfaces.UserInfo {
 	db := model.DB
 
 	password := userInfo.Password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return "Create failed", err
+		return nil
 	}
 
-	_, err = db.Exec("INSERT INTO users(username, email, password, role) VALUES(?, ?, ?, ?)", userInfo.UserName, userInfo.Email, hashedPassword, "USER")
+	_, err = db.Exec("INSERT INTO users(username, email, password, role) VALUES(?, ?, ?, ?)", userInfo.UserName, userInfo.Email, hashedPassword, userInfo.Role)
 
 	if err != nil {
-		return "Create failed", err
+		return nil
 	}
-	return "Create successfully", nil
+
+	return model.GetOne(userInfo.UserName)
+}
+
+func (model *Users) GetOne(userName string) *interfaces.UserInfo {
+	db := model.DB
+	var email, role string
+
+	err := db.QueryRow("SELECT email, role FROM users WHERE username=?", userName).
+		Scan(&email, &role)
+
+	if err != nil {
+		return nil
+	}
+
+	return &interfaces.UserInfo{userName, "", email, role}
 }
 
 func (model *Users) CheckCredential(userInfo *(interfaces.UserInfo)) *(interfaces.UserInfo) {
