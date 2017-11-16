@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/anhnguyen300795/Task-manager/src/interfaces"
 	"golang.org/x/crypto/bcrypt"
@@ -49,7 +50,9 @@ func (model *Users) AddOne(userInfo *(interfaces.UserInfo)) *interfaces.UserInfo
 		return nil
 	}
 
-	return model.GetOne(userInfo.UserName)
+	userInfo.Password = ""
+
+	return userInfo
 }
 
 func (model *Users) GetOne(userName string) *interfaces.UserInfo {
@@ -59,11 +62,32 @@ func (model *Users) GetOne(userName string) *interfaces.UserInfo {
 	err := db.QueryRow("SELECT email, role FROM users WHERE username=?", userName).
 		Scan(&email, &role)
 
+	fmt.Println(err)
 	if err != nil {
 		return nil
 	}
 
 	return &interfaces.UserInfo{userName, "", email, role}
+}
+
+func (model *Users) UpdateOne(userInfo *(interfaces.UserInfo)) *interfaces.UserInfo {
+	db := model.DB
+
+	_, err := db.Exec("UPDATE users set email=?, role=? WHERE username=?", userInfo.Email, userInfo.Role, userInfo.UserName)
+
+	if err != nil {
+		return nil
+	}
+
+	return userInfo
+}
+
+func (model *Users) DeleteOne(userName string) error {
+	db := model.DB
+
+	_, err := db.Exec("DELETE users WHERE username=?", userName)
+
+	return err
 }
 
 func (model *Users) CheckCredential(userInfo *(interfaces.UserInfo)) *(interfaces.UserInfo) {

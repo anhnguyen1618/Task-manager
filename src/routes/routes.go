@@ -30,6 +30,7 @@ func InititalizeRoutes(env *interfaces.Env) {
 	r.HandleFunc("/currentUser", authMW(Controllers.CurrentUserController))
 
 	r.HandleFunc("/users", authMW(Controllers.UsersController))
+	r.HandleFunc("/users/{userName}", authMW(Controllers.UpdateUserController))
 
 	r.HandleFunc("/tasks", authMW(Controllers.AllTaskController))
 	r.HandleFunc("/tasks/{id}", authMW(Controllers.UpdateTaskController))
