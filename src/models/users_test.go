@@ -121,7 +121,8 @@ func TestDeleteUser(t *testing.T) {
 	userModel := &Users{db}
 
 	result := sqlmock.NewResult(1, 1)
-	mock.ExpectExec("^DELETE users(.+)").
+	mock.ExpectExec("^DELETE FROM users(.+)").
+		WithArgs("testName").
 		WillReturnResult(result)
 
 	err = userModel.DeleteOne("testName")
