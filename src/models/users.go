@@ -85,7 +85,7 @@ func (model *Users) UpdateOne(userInfo *(interfaces.UserInfo)) *interfaces.UserI
 func (model *Users) DeleteOne(userName string) error {
 	db := model.DB
 
-	_, err := db.Exec("DELETE users WHERE username=?", userName)
+	_, err := db.Exec("DELETE FROM users WHERE username=?", userName)
 
 	return err
 }

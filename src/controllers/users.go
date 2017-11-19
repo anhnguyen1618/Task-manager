@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -55,6 +56,9 @@ func (controller *Controllers) UpdateUserController(w http.ResponseWriter, r *ht
 	} else if r.Method == "DELETE" {
 		err := Users.DeleteOne(userName)
 		utils.CheckErrors(w, err, http.StatusInternalServerError)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "user "+vars["userName"]+" removed!")
 	}
 
 }
