@@ -56,12 +56,18 @@ func (controller *Controllers) SignUpController(w http.ResponseWriter, r *http.R
 
 		Users := models.Users{controller.DB}
 
-		status, err := Users.AddOne(&user)
-		if err != nil {
+		createdUser := Users.AddOne(&user)
+
+		if createdUser == nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
-		fmt.Fprintf(w, status)
+		resPayload, err := json.Marshal(createdUser)
+		utils.CheckErrors(w, err, http.StatusInternalServerError)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(resPayload)
 	}
 }
 
