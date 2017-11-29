@@ -40,7 +40,7 @@ func TestCommentControllerGET(t *testing.T) {
 	env := &interfaces.Env{db, nil}
 	Controllers := &Controllers{env}
 
-	r := httptest.NewRequest("GET", "/tasks", nil)
+	r := httptest.NewRequest("GET", "/api/tasks", nil)
 	w := httptest.NewRecorder()
 
 	rows := sqlmock.NewRows([]string{"ID", "title", "status", "assignee", "assignor", "start_time", "end_time", "description"}).
@@ -81,7 +81,7 @@ func TestCommentControllerPOST(t *testing.T) {
 	env := &interfaces.Env{db, nil}
 	Controllers := &Controllers{env}
 
-	r := httptest.NewRequest("POST", "/tasks", nil)
+	r := httptest.NewRequest("POST", "/api/tasks", nil)
 	w := httptest.NewRecorder()
 
 	result := sqlmock.NewResult(1, 1)
@@ -124,7 +124,7 @@ func TestUpdateTaskControllerPUT(t *testing.T) {
 	Controllers := &Controllers{env}
 	// NOTE THAT MUX ROUTER SHOULD BE CREATED TO TEST ROUTE URL PARAMS
 	router := mux.NewRouter()
-	router.HandleFunc("/tasks/{id}", Controllers.UpdateTaskController)
+	router.HandleFunc("/api/tasks/{id}", Controllers.UpdateTaskController)
 
 	result := sqlmock.NewResult(1, 1)
 	mock.ExpectExec("^UPDATE tasks SET").
@@ -133,7 +133,7 @@ func TestUpdateTaskControllerPUT(t *testing.T) {
 	reqBody := interfaces.Task{1, "title1", "todo", "tester1", "assignor1", "20-10-2013", "20-10-2013", "testDescription"}
 	jsonValue, _ := json.Marshal(reqBody)
 
-	r := httptest.NewRequest("PUT", "/tasks/1", bytes.NewBuffer(jsonValue))
+	r := httptest.NewRequest("PUT", "/api/tasks/1", bytes.NewBuffer(jsonValue))
 	w := httptest.NewRecorder()
 
 	router.ServeHTTP(w, r)

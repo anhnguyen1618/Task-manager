@@ -78,6 +78,9 @@ func (controller *Controllers) SignOutController(w http.ResponseWriter, r *http.
 		rawToken = r.Header["Authorization"][0]
 	}
 	controller.RedisDB.SAdd(config.INVALID_TOKENS, rawToken)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "Log out")
 }
 
 func (controller *Controllers) CurrentUserController(w http.ResponseWriter, r *http.Request) {
