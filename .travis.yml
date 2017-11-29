@@ -8,12 +8,12 @@ services:
 - docker
 env:
   global:
-  - PROJECT_ID=manifest-ivy-166222
+  - PROJECT_ID=task-manager-184318
   - CLUSTER_NAME=task-manager-cluster
   - CLOUDSDK_COMPUTE_ZONE=europe-west3-a
   - DOCKER_IMAGE_NAME=task-manager-app
-  - KUBE_DEPLOYMENT_NAME=task-manager-web
-  - KUBE_DEPLOYMENT_CONTAINER_NAME=task-manager-web
+  - KUBE_DEPLOYMENT_NAME=task-manager-deployment
+  - KUBE_DEPLOYMENT_CONTAINER_NAME=task-manager-deployment
 before_script:
 - cd src && go get ./...
 
