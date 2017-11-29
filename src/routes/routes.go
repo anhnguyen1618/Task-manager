@@ -11,7 +11,7 @@ import (
 
 func InititalizeRoutes(env *interfaces.Env) {
 	r := mux.NewRouter()
-	fs := http.FileServer(http.Dir("/public"))
+	fs := http.FileServer(http.Dir("public"))
 
 	// Declare shortHand middlewares
 	middlewareEnv := &middlewares.MiddleWares{env}
@@ -22,21 +22,25 @@ func InititalizeRoutes(env *interfaces.Env) {
 	// Pass db connections to controllers
 	Controllers := &controllers.Controllers{env}
 
-	r.Handle("/public", fs)
-	r.HandleFunc("/", Controllers.LandingController)
-	r.HandleFunc("/login", Controllers.LoginController)
-	r.HandleFunc("/signUp", Controllers.SignUpController)
-	r.HandleFunc("/signout", authMW(Controllers.SignOutController))
-	r.HandleFunc("/currentUser", authMW(Controllers.CurrentUserController))
+	http.Handle("/public/", http.StripPrefix("/public/", fs))
 
-	r.HandleFunc("/users", authMW(Controllers.UsersController))
-	r.HandleFunc("/users/{userName}", authMW(Controllers.UpdateUserController))
+	apiHandler := r.PathPrefix("/api").Subrouter()
 
-	r.HandleFunc("/tasks", authMW(Controllers.AllTaskController))
-	r.HandleFunc("/tasks/{id}", authMW(Controllers.UpdateTaskController))
+	apiHandler.HandleFunc("/login", Controllers.LoginController)
+	apiHandler.HandleFunc("/signUp", Controllers.SignUpController)
+	apiHandler.HandleFunc("/logout", authMW(Controllers.SignOutController))
+	apiHandler.HandleFunc("/currentUser", authMW(Controllers.CurrentUserController))
 
-	r.HandleFunc("/tasks/{id}/comments", authMW(Controllers.CommentController))
-	r.HandleFunc("/tasks/{id}/comments/{commentID}", authMW(Controllers.UpdateCommentController))
+	apiHandler.HandleFunc("/users", authMW(Controllers.UsersController))
+	apiHandler.HandleFunc("/users/{userName}", authMW(Controllers.UpdateUserController))
+
+	apiHandler.HandleFunc("/tasks", authMW(Controllers.AllTaskController))
+	apiHandler.HandleFunc("/tasks/{id}", authMW(Controllers.UpdateTaskController))
+
+	apiHandler.HandleFunc("/tasks/{id}/comments", authMW(Controllers.CommentController))
+	apiHandler.HandleFunc("/tasks/{id}/comments/{commentID}", authMW(Controllers.UpdateCommentController))
+
+	r.PathPrefix("/").HandlerFunc(Controllers.LandingController)
 
 	http.HandleFunc("/", loggerMW(errorMW(r)))
 
