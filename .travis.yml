@@ -1,26 +1,19 @@
 language: go
 go:
 - 1.9
-
-# Cache Gcloud SDK between commands
 cache:
   directories:
-    - "$HOME/google-cloud-sdk/"
-
-# Install services
+  - $HOME/google-cloud-sdk/
 services:
-  - docker
-
+- docker
 env:
   global:
-    # - GOOGLE_APPLICATION_CREDENTIALS=~/gcloud-service-key.json
-    - PROJECT_ID=manifest-ivy-166222
-    - CLUSTER_NAME=task-manager-cluster
-    - CLOUDSDK_COMPUTE_ZONE=europe-west3-a
-    - DOCKER_IMAGE_NAME=task-manager-app
-    - KUBE_DEPLOYMENT_NAME=task-manager-web
-    - KUBE_DEPLOYMENT_CONTAINER_NAME=task-manager-web
-
+  - PROJECT_ID=manifest-ivy-166222
+  - CLUSTER_NAME=task-manager-cluster
+  - CLOUDSDK_COMPUTE_ZONE=europe-west3-a
+  - DOCKER_IMAGE_NAME=task-manager-app
+  - KUBE_DEPLOYMENT_NAME=task-manager-web
+  - KUBE_DEPLOYMENT_CONTAINER_NAME=task-manager-web
 before_script:
 - cd src && go get ./...
 
@@ -32,25 +25,24 @@ after_success:
 notifications:
   email: false
 
+before_install:
+- openssl aes-256-cbc -K $encrypted_e4c4942099d0_key -iv $encrypted_e4c4942099d0_iv
+  -in credentials.tar.gz.enc -out credentials.tar.gz -d
 
-# before_install:
-# - openssl aes-256-cbc -K $encrypted_db2b5ba57bdf_key -iv $encrypted_db2b5ba57bdf_iv
-#   -in credentials.tar.gz.enc -out credentials.tar.gz -d
+before_deploy:
+  - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
+  - source /home/travis/google-cloud-sdk/path.bash.inc
+  - tar -xzf credentials.tar.gz
+  - mkdir -p lib
+  - gcloud auth activate-service-account --key-file client-secret.json
+  - gcloud --quiet version
+  - gcloud --quiet components update
+  - gcloud --quiet components update kubectl
+  - chmod +x deploy-production.sh
 
-# before_deploy:
-#   - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
-#   - source /home/travis/google-cloud-sdk/path.bash.inc
-#   - tar -xzf credentials.tar.gz
-#   - mkdir -p lib
-#   - gcloud auth activate-service-account --key-file client-secret.json
-#   - gcloud --quiet version
-#   - gcloud --quiet components update
-#   - gcloud --quiet components update kubectl
-#   - chmod +x deploy-production.sh
-
-# deploy:
-#   - provider: script
-#     script: ./deploy-production.sh
-#     skip_cleanup: true
-#     on:
-#       branch: master
+deploy:
+  - provider: script
+    script: ./deploy-production.sh
+    skip_cleanup: true
+    on:
+      branch: master
