@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-ENV GO_VERSION go-1.9.2-r1
+ENV GO_VERSION 1.9.2-r1
 
 ENV GOPATH /go
 
