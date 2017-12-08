@@ -1,15 +1,36 @@
-# Start from a Debian image with the latest version of Go installed
-# and a workspace (GOPATH) configured at /go.
-FROM golang
+FROM alpine:latest
 
-WORKDIR /go/src/github.com/anhnguyen300795/Task-manager/src
+ENV GO_VERSION 1.8.4-r0
+
+ENV GOPATH /go
+
+ENV PROJECT_DIR github.com/anhnguyen300795/Task-manager
+
+ENV WORKDIR = ${GOPATH}/src/${PROJECT_DIR}/src
+
+WORKDIR ${WORKDIR}
 
 # Copy the local package files to the container's workspace.
-COPY ./src /go/src/github.com/anhnguyen300795/Task-manager/src
+COPY ./src .
 
-RUN go get ./...
+# Update list of softwares that need updating & upgrade those softwares to latest version
+RUN apk update && apk upgrade && \
+    # add extra package for installation 
+    apk add git go=$GO_VERSION musl-dev && \
+    # remove cached info
+    rm -rf /var/cache/apk/*
+
+# Recursively add excecution permission for files under scripts folder
+RUN chmod -R +x ./scripts
+
+# Generate log file text
+RUN cd scripts && ./log.sh
+
+
+# Install golang project's dependencies
+RUN go get ${PROJECT_DIR}/...
 
 # Document that the service listens on port 8080.
 EXPOSE 8080
 
-CMD [ "go", "run", "main.go" ]
+ENTRYPOINT [ "./scripts/start.sh" ]
