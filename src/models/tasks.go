@@ -79,7 +79,7 @@ func (model *Tasks) Add(task *interfaces.Task) (*interfaces.TaskQuery, error) {
 	result, err := db.Exec(
 		`INSERT INTO tasks(id, title, status, assignee, assignor, start_time, end_time, description)
 		 VALUES(?, ?, ?, ?, ?, ?, ?, ?)`,
-		nil, task.Title, task.Status, task.Assignee, task.Assignor, time.Now().String(), task.EndTime, task.Description)
+		nil, task.Title, task.Status, task.Assignee, task.Assignor, time.Now().Format("2006-01-02"), task.EndTime, task.Description)
 
 	if err != nil {
 		return nil, err
